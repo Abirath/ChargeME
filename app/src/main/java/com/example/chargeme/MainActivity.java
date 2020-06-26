@@ -9,11 +9,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.LocaleList;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -38,7 +37,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
@@ -80,15 +78,16 @@ public class MainActivity extends AppCompatActivity {
         //ArrayList<LocationResponse> locationList = new ArrayList<>();
         //ArrayList<AddressInfo> addressList = new ArrayList<>();
 
-        //btnRequest = (Button) findViewById(R.id.buttonRequest);
+        btnRequest = (Button) findViewById(R.id.buttonRequest);
 
-        /*btnRequest.setOnClickListener(new View  .OnClickListener() {
+        btnRequest.setOnClickListener(new View  .OnClickListener() {
             @Override
             public void onClick(View v){
-                locationList = sendAndRequestResponse();
-                locationAdapter = new LocationAdapter(locationList);
+                /*locationList = sendAndRequestResponse();
+                locationAdapter = new LocationAdapter(locationList);*/
+                OpenMapView();
             }
-        });*/
+        });
 
         locationList = sendAndRequestResponse();
         ArrayList<LocationResponse> locationList = new ArrayList<>();
@@ -125,6 +124,11 @@ public class MainActivity extends AppCompatActivity {
         GetLocation();
     }
 
+    private void OpenMapView(){
+        Intent intent = new Intent(this, MapView.class);
+        //intent.putExtra()
+        startActivity(intent);
+    }
     private ArrayList<LocationResponse> sendAndRequestResponse() {
         addressList = new ArrayList<>();
         final AddressInfo newAdd = null;
@@ -151,9 +155,6 @@ public class MainActivity extends AppCompatActivity {
                         String lon = ad.getString("Longitude");
                         String dist = ad.getString("Distance");
 
-                        //newAdd.getAddress().add(new AddressInfo(title,addressline1,lat,lon));
-                        //list.add(ad.getString("Title"));
-
                         HashMap<String, String> address = new HashMap<>();
                         address.put("Title", title);
                         address.put("AddressLine1", addressline1);
@@ -163,22 +164,15 @@ public class MainActivity extends AppCompatActivity {
                         address.put("Distance", dist);
 
                         addressList.add(address);
-                        //addressInfoArrayList.add(new AddressInfo(title,addressline1,lat,lon));
                     }
                     for (int i = 0; i < addressList.size(); i++) {
                         HashMap<String, String> viewList = addressList.get(i);
                         locationList.add(new LocationResponse(R.drawable.ic_ev_station, viewList.get("Title"), viewList.get("AddressLine1")));
                     }
-
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-                //Load recycle view
                 LoadRecyclerView(locationList);
-                //txtresponse = (TextView) findViewById(R.id.txtResponse);
-                //txtresponse.setText(addressList.toString());
             }
         }, new Response.ErrorListener() {
             @Override
@@ -190,13 +184,10 @@ public class MainActivity extends AppCompatActivity {
 
         mRequestQueue.add(mStringRequest);
 
-        //return addressInfoArrayList;
-        //return newAdd;
         return locationList;
-        //return addressList;
     }
 
-    private void LoadRecyclerView(ArrayList<LocationResponse> locationList) {
+    public void LoadRecyclerView(ArrayList<LocationResponse> locationList) {
         lRecyclerView = findViewById(R.id.recLocation);
         lRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
@@ -273,19 +264,9 @@ public class MainActivity extends AppCompatActivity {
                 String currentLon = Double.toString(locationResult.getLastLocation().getLongitude());
                 txtresponse = (TextView) findViewById(R.id.txtResponse);
 
-                //txtresponse.setText("Your current location: "+currentLat+","+currentLon);
                 txtresponse.setText("Your current location: "+currentLat+","+currentLon);
-                // txtLat.setText(Double.toString(locationResult.getLastLocation().getLatitude()));
-                // txtLong.setText(Double.toString(locationResult.getLastLocation().getLongitude()));
-
-
-                /*Log.e("Lat:" +Double.toString(locationResult.getLastLocation().getLatitude())
-                        + "Long:" +locationResult.getLastLocation().getLongitude());*/
 
             }
         }, getMainLooper());
-        /*if (currentLat == null){
-            GetLocation();
-        }*/
     }
 }
